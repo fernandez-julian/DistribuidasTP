@@ -117,6 +117,62 @@ public class HomeController {
 	    return null;
 
 	}
-	
+
+	@RequestMapping(value = "/productos", method = RequestMethod.POST)
+	public @ResponseBody String addProducto(@RequestBody String productoView) throws JsonProcessingException {
+		ResponseObject response = new ResponseObject();
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			ProductoRequestView producto = objectMapper.readValue(productoView, ProductoRequestView.class);
+			Controlador.getInstancia().altaProducto(convertRequestObjectToView(producto));
+			response.setStatus(true);
+		} catch (RubroException e) {
+			response.setStatus(false);
+			response.setMessage(e.getMessage());
+		} catch (IOException e) {
+			response.setStatus(false);
+			response.setMessage("Parametros faltantes o invalidos");
+		}
+		return objectMapper.writeValueAsString(response);
+	}
+
+	private ProductoView convertRequestObjectToView(ProductoRequestView producto) {
+		ProductoView productoView = new ProductoView();
+		productoView.setCodigoBarras(producto.getCodigoBarras());
+		productoView.setMarca(producto.getMarca());
+		productoView.setNombre(producto.getNombre());
+		RubroView rubro = new RubroView();
+		rubro.setCodigo(producto.getCodigoRubro());
+		productoView.setRubro(rubro);
+		SubRubroView subRubro = new SubRubroView();
+		subRubro.setCodigo(producto.getCodigoSubRubro());
+		productoView.setSubRubro(subRubro);
+		productoView.setPrecio(producto.getPrecio());
+		return productoView;
+	}
+
+	@RequestMapping(value = "/productos/{identificador}", method = RequestMethod.DELETE)
+	public @ResponseBody String bajaProducto(@PathVariable(value = "identificador") int identificadorProducto)
+			throws JsonProcessingException {
+		ResponseObject response = new ResponseObject();
+		ObjectMapper objectMapper = new ObjectMapper();
+		ProductoView producto = new ProductoView();
+		producto.setIdentificador(identificadorProducto);
+		Controlador.getInstancia().bajaProducto(producto);
+		response.setStatus(true);
+		return objectMapper.writeValueAsString(response);
+	}
+
+	@RequestMapping(value = "/productos/{identificador}", method = RequestMethod.PUT)
+	public @ResponseBody String modificarProducto(@PathVariable(value = "identificador") int identificadorProducto)
+			throws JsonProcessingException {
+		ResponseObject response = new ResponseObject();
+		ObjectMapper objectMapper = new ObjectMapper();
+		ProductoView producto = new ProductoView();
+		producto.setIdentificador(identificadorProducto);
+		Controlador.getInstancia().modificaProducto(producto);
+		response.setStatus(true);
+		return objectMapper.writeValueAsString(response);
+	}
 	
 }
