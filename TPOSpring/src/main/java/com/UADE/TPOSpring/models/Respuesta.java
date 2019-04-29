@@ -1,4 +1,4 @@
-package ar.edu.uade.models;
+package com.UADE.TPOSpring.models;
 
 public class Respuesta {
 	private Boolean estado;
