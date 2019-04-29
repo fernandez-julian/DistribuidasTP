@@ -9,6 +9,7 @@ import org.hibernate.classic.Session;
 import entities.ProductoEntity;
 import entities.RubroEntity;
 import entities.SubRubroEntity;
+import exceptions.ProductoException;
 import hibernate.HibernateUtil;
 import negocio.Producto;
 import negocio.Rubro;
@@ -26,20 +27,26 @@ public class ProductoDAO {
 		return instancia;
 	}
 	
-	public Producto findProductoByCodigo(String codigoBarras){
+	public Producto findProductoByCodigo(String codigoBarras) throws ProductoException{
 		SessionFactory sf = HibernateUtil.getSessionFactory();
 		Session s = sf.openSession();
 		s.beginTransaction();
 		ProductoEntity recuperado = (ProductoEntity) s.createQuery("from ProductoEntity where codigoBarras = ?").setString(0, codigoBarras).uniqueResult();	
-		return this.toNegocio(recuperado);
+		if(recuperado != null)
+			return this.toNegocio(recuperado);
+		else
+			throw new ProductoException("No existe el producto cuyo codigo de barras es " + codigoBarras);
 	}
 	
-	public Producto findProductoByIdentificador(int identificador) {
+	public Producto findProductoByIdentificador(int identificador) throws ProductoException {
 		SessionFactory sf = HibernateUtil.getSessionFactory();
 		Session s = sf.openSession();
 		s.beginTransaction();
 		ProductoEntity recuperado = (ProductoEntity) s.createQuery("from ProductoEntity where identificador = ?").setInteger(0, identificador).uniqueResult();	
-		return this.toNegocio(recuperado);
+		if(recuperado != null)
+			return this.toNegocio(recuperado);
+		else
+			throw new ProductoException("No existe el producto cuyo identificador es "  + identificador);
 	}
 	
 	public List<Producto> findAll() {
@@ -129,9 +136,4 @@ public class ProductoDAO {
 		ProductoEntity aux = new ProductoEntity(producto.getIdentificador(),auxSR, auxR,producto.getNombre(), producto.getMarca(), producto.getCodigoBarras(), producto.getPrecio());
 		return aux;
 	}
-
-
-
-
-
 }

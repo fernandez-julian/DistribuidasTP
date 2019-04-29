@@ -5,6 +5,7 @@ import java.util.Date;
 
 import daos.UsuarioDAO;
 import exceptions.CambioPasswordException;
+import exceptions.UsuarioException;
 
 public class Usuario {
 
@@ -32,14 +33,14 @@ public class Usuario {
 		this.cantidadPasswords = cantidadPasswords;
 	}
 
-	public void deshabilitarUsario(){
+	public void deshabilitarUsario() throws UsuarioException{
 		if(this.habilitado){
 			this.habilitado = false;
 			UsuarioDAO.getInstancia().update(this);
 		}
 	}
 	
-	public void habilitarUsuario(){
+	public void habilitarUsuario() throws UsuarioException{
 		if(!this.habilitado){
 			this.habilitado = true;
 			UsuarioDAO.getInstancia().update(this);
@@ -50,7 +51,7 @@ public class Usuario {
 		return Calendar.getInstance().getTimeInMillis() - ultimaFechaCambio.getTime() > 3499999999l;
 	}
 	
-	public void actualizoPassword(String password) throws CambioPasswordException{
+	public void actualizoPassword(String password) throws CambioPasswordException, UsuarioException{
 		if(password.length() < 8   || 
 		   password.contains("=")  ||
 		   password.contains("'")  ||

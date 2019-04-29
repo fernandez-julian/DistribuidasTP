@@ -1,5 +1,7 @@
 package negocio;
 
+
+import daos.ItemPedidoDAO;
 import view.ItemPedidoView;
 
 public class ItemPedido {
@@ -22,6 +24,10 @@ public class ItemPedido {
 		this.precio = precio;
 	}
 
+	public void save(Pedido pedido) {
+		ItemPedidoDAO.getInstancia().save(producto, cantidad, pedido);
+	}
+	
 	public int getNumero() {
 		return numero;
 	}
@@ -44,6 +50,5 @@ public class ItemPedido {
 	
 	public ItemPedidoView toView(){
 		return new ItemPedidoView(producto.toView(), cantidad, precio);
-	}
-	
+	}	
 }

@@ -1,12 +1,11 @@
 package test;
 
-import java.util.List;
-
-import daos.PedidoDAO;
-import daos.ProductoDAO;
-import negocio.ItemPedido;
-import negocio.Pedido;
-import negocio.Producto;
+import controlador.Controlador;
+import exceptions.ClienteException;
+import exceptions.PedidoException;
+import exceptions.ProductoException;
+import view.ItemPedidoView;
+import view.PedidoView;
 
 public class Test {
 
@@ -19,11 +18,12 @@ public class Test {
 			System.out.println(r.getDescripcion() + " " + r.getRubro().getDescripcion());*/
 		
 		
- 
-		//System.out.println(p.getNombre());
+/*		Producto p  = ProductoDAO.getInstancia().findProductoByCodigo("7790040930209");
+ * 
+		System.out.println(p.getNombre());
 		List<Producto> ps =  ProductoDAO.getInstancia().findProductoByMarca("Coca-Cola");
 		for(Producto pp : ps)
-			System.out.println(pp.getCodigoBarras() + ":" + pp.getNombre() + " - " + pp.getRubro().getDescripcion());
+			System.out.println(pp.getCodigoBarras() + ":" + pp.getNombre() + " - " + pp.getRubro().getDescripcion());*/
 		
 		//Controlador.getInstancia().getRubros();
 		//Controlador.getInstancia().getSubRubros();
@@ -40,11 +40,16 @@ public class Test {
 		System.out.println(p.getPrecio());*/
 /*		RubroView r1 = Controlador.getInstancia().getRubros().get(2);
 		SubRubroView sr1 = Controlador.getInstancia().getSubRubros().get(2);
-		ProductoView alta = new ProductoView(sr1, r1, "Chotaaaaiiii", "Chotto", "12345678912", 2345.67f);
-		Controlador.getInstancia().altaProducto(alta);
-		Producto p  = ProductoDAO.getInstancia().findProductoByIdentificador(2463);
-		p.delete();*/
-		//Usuario aux = UsuarioDAO.getInstancia().getUsuarioByNombre("User_01");
+		ProductoView alta = new ProductoView(sr1, r1, "Chotext", "Chottoy", "34567891212", 2345.67f);
+		try {
+			Controlador.getInstancia().altaProducto(alta);
+		} catch (RubroException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		//Producto p  = ProductoDAO.getInstancia().findProductoByIdentificador(2463);
+		//p.delete();*/
+		//Usuario aux = UsuarioDAO.getInstancia().getUsuarioByNombre("Admin");
 		//System.out.println(aux.getNombre() + " " + aux.getPassword());
 		//try {
 			//aux.deshabilitarUsario();
@@ -58,7 +63,7 @@ public class Test {
 		
 /*		try {
 			//Controlador.getInstancia().login("User_01", "CacaMann2");
-			Controlador.getInstancia().cambioPassword("User_04", "CambioNro01");
+			Controlador.getInstancia().cambioPassword("User_01", "CambioNro01");
 			System.out.println("Cambiado???");
 		} catch (CambioPasswordException e) {
 			// TODO Auto-generated catch block
@@ -73,15 +78,43 @@ public class Test {
 			e.printStackTrace();
 		}*/
 		
-		/*Pedido p = PedidoDAO.getInstancia().findPedidoByNumero(1);
-		Producto pr = ProductoDAO.getInstancia().findProductoByIdentificador(8);
-		p.addProductoEnPedido(pr, 333);
-		System.out.println(p.getCliente().getNombre());
-		for(ItemPedido ip : p.getItems())
+/*		try {
+			Pedido p = PedidoDAO.getInstancia().findPedidoByNumero(1);
+		} catch (PedidoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		//PedidoView aux = new PedidoView();
+	//	ClienteView auxC = new ClienteView();
+		//auxC.setCuil("30-30702760-1");
+		//aux.setCliente(auxC);
+		//PedidoDAO.getInstancia().save(aux);
+		//Producto pr = ProductoDAO.getInstancia().findProductoByIdentificador(9);
+//		p.addProductoEnPedido(pr, 333);
+		//System.out.println(p.getCliente().getNombre() + " " + p.getItems().size());
+	/*	for(ItemPedido ip : p.getItems())
 			System.out.println("\t" + ip.getProducto().getNombre());
-		PedidoDAO.getInstancia().save(p);
-		*/
-	
+		PedidoDAO.getInstancia().save(p);*/
+		
+		
+		//PedidoDAO.getInstancia().delete(1002);
+		
+		try {
+			int numero = Controlador.getInstancia().crearPedido("30-31374667-1");
+			Controlador.getInstancia().agregarProductoEnPedido(numero, 23, 220);
+			Controlador.getInstancia().agregarProductoEnPedido(numero, 33, 320);
+			Controlador.getInstancia().agregarProductoEnPedido(numero, 43, 420);
+			PedidoView pedido = Controlador.getInstancia().getPedidoById(numero);
+			System.out.println(pedido.toString());
+			for(ItemPedidoView ipv : pedido.getItems())
+				System.out.println(ipv.getCantidad() + " " + ipv.getProducto().getNombre() + " " + ipv.getPrecio());
+/*			System.out.println(pedido.getItems().size());
+			Controlador.getInstancia().eliminarPedido(3);*/
+			
+		} catch (PedidoException | ProductoException | ClienteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

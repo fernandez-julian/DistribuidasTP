@@ -20,6 +20,10 @@ public class PedidoView {
 		this.items = new ArrayList<ItemPedidoView>();
 	}
 
+	public PedidoView() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public void addItemEnPedido(ItemPedidoView item){
 		items.add(item);
 	}
@@ -46,6 +50,11 @@ public class PedidoView {
 	
 	public String toString(){
 		return numeroPedido + " " + cliente.getNombre();
+	}
+
+	public void setCliente(ClienteView auxC) {
+		this.cliente = auxC;
+		
 	}
 	
 }

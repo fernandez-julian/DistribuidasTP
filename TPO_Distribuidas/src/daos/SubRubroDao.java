@@ -7,6 +7,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.classic.Session;
 
 import entities.SubRubroEntity;
+import exceptions.SubRubroException;
 import hibernate.HibernateUtil;
 import negocio.Rubro;
 import negocio.SubRubro;
@@ -23,12 +24,15 @@ public class SubRubroDao {
 		return instancia;
 	}
 	
-	public SubRubro findByCodigo(int codigo){
+	public SubRubro findByCodigo(int codigo) throws SubRubroException{
 		SessionFactory sf = HibernateUtil.getSessionFactory();
 		Session s = sf.openSession();
 		s.beginTransaction();
 		SubRubroEntity recuperado = (SubRubroEntity) s.createQuery("from SubRubroEntity where codigo = ?").setInteger(0, codigo).uniqueResult();
-		return this.toNegocio(recuperado);
+		if(recuperado != null)
+			return this.toNegocio(recuperado);
+		else
+			throw new SubRubroException("No existe un subrubro con codigo " + codigo);
 	}
 	
 	public List<SubRubro> findAll(){

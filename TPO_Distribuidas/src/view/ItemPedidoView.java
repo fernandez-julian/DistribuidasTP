@@ -25,5 +25,4 @@ public class ItemPedidoView {
 	public float getPrecio() {
 		return precio;
 	}
-	
 }

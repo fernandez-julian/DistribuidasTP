@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import daos.PedidoDAO;
 import view.PedidoView;
 
 public class Pedido {
@@ -31,7 +32,10 @@ public class Pedido {
 	}
 
 	public void addProductoEnPedido(Producto producto, int cantidad){
-		items.add(new ItemPedido(producto, cantidad));
+		ItemPedido itemPedido = new ItemPedido(producto, cantidad);
+		itemPedido.save(this);
+		items.add(itemPedido);
+		
 	}
 	
 	public void addProductoEnPedido(int numero, Producto producto, int cantidad, float precio){
@@ -67,6 +71,20 @@ public class Pedido {
 		for(ItemPedido ip : items)
 			aux.addItemEnPedido(ip.toView());
 		return aux;
+	}
+
+	public void facturar() {
+		this.estado = "facturado";
+		PedidoDAO.getInstancia().updateEstado(this);
+	}
+
+	public int save() {
+		PedidoDAO.getInstancia().save(this);
+		return this.numeroPedido;
+	}
+
+	public void setNumeroPedido(int numeroPedido) {
+		this.numeroPedido = numeroPedido;
 	}
 	
 }

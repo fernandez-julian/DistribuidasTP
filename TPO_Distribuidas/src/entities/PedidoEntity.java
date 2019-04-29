@@ -3,6 +3,7 @@ package entities;
 import java.sql.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,10 +14,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import daos.ItemPedidoDAO;
+
 @Entity
 @Table(name="pedidos")
 public class PedidoEntity {
-
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -25,9 +27,9 @@ public class PedidoEntity {
 	@JoinColumn(name="numeroCliente")
 	private ClienteEntity cliente;
 	private Date fechaPedido;
-	@Column(name="estadoPEdido")
+	@Column(name="estadoPedido")
 	private String estado;
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name="numeroPedido")
 	List<ItemPedidoEntity> items;
 	
@@ -66,7 +68,8 @@ public class PedidoEntity {
 	}
 
 	public List<ItemPedidoEntity> getItems() {
-		return items;
+		
+		return ItemPedidoDAO.getInstancia().getAll(this);
 	}
 
 	public void setItems(List<ItemPedidoEntity> items) {

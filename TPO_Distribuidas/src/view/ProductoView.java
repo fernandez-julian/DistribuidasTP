@@ -9,14 +9,19 @@ public class ProductoView {
 	private String marca;
 	private String codigoBarras;
 	private float precio;
-	
-	public ProductoView(SubRubroView subRubro, RubroView rubro, String nombre, String marca, String codigoBarras, float precio) {
+
+	public ProductoView(SubRubroView subRubro, RubroView rubro, String nombre, String marca, String codigoBarras,
+			float precio) {
 		this.subRubro = subRubro;
 		this.rubro = rubro;
 		this.nombre = nombre;
 		this.marca = marca;
 		this.codigoBarras = codigoBarras;
 		this.precio = precio;
+	}
+
+	public void setIdentificador(int identificador) {
+		this.identificador = identificador;
 	}
 
 	public int getIdentificador() {
@@ -46,9 +51,9 @@ public class ProductoView {
 	public float getPrecio() {
 		return precio;
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		return nombre + " " + codigoBarras;
 	}
-	
+
 }

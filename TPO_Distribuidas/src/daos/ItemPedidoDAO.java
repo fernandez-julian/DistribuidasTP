@@ -1,12 +1,17 @@
 package daos;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import entities.ItemPedidoEntity;
-import entities.ProductoEntity;
+import entities.PedidoEntity;
+import exceptions.ProductoException;
 import hibernate.HibernateUtil;
 import negocio.ItemPedido;
+import negocio.Pedido;
 import negocio.Producto;
 
 public class ItemPedidoDAO {
@@ -21,117 +26,32 @@ public class ItemPedidoDAO {
 		return instancia;
 	}
 	
-/*	public Producto findProductoByCodigo(String codigoBarras){
+	public List<ItemPedidoEntity> getAll(PedidoEntity pedido) {
+		List<ItemPedidoEntity> resultado = new ArrayList<ItemPedidoEntity>();
 		SessionFactory sf = HibernateUtil.getSessionFactory();
 		Session s = sf.openSession();
 		s.beginTransaction();
-		ProductoEntity recuperado = (ProductoEntity) s.createQuery("from ProductoEntity where codigoBarras = ?").setString(0, codigoBarras).uniqueResult();	
-		return this.toNegocio(recuperado);
-	}
-	
-	public Producto findProductoByIdentificador(int identificador) {
-		SessionFactory sf = HibernateUtil.getSessionFactory();
-		Session s = sf.openSession();
-		s.beginTransaction();
-		ProductoEntity recuperado = (ProductoEntity) s.createQuery("from ProductoEntity where identificador = ?").setInteger(0, identificador).uniqueResult();	
-		return this.toNegocio(recuperado);
-	}
-	
-	public List<Producto> findAll() {
-		List<Producto> resultado = new ArrayList<Producto>();
-		SessionFactory sf = HibernateUtil.getSessionFactory();
-		Session s = sf.openSession();
-		s.beginTransaction();
-		List<ProductoEntity> recuperados = s.createQuery("from ProductoEntity").list();	
-		for(ProductoEntity pe : recuperados)
-			resultado.add(this.toNegocio(pe));
+		List<ItemPedidoEntity> recuperados = s.createQuery("from ItemPedidoEntity where pedido.numeroPedido = ?").setInteger(0, pedido.getNumeroPedido()).list();	
+		for(ItemPedidoEntity pe : recuperados)
+			resultado.add(pe);
 		return resultado;
 	}
-	
-	public List<Producto> findProductoByRubro(int identificadorRubro){
-		List<Producto> resultado = new ArrayList<Producto>();
-		SessionFactory sf = HibernateUtil.getSessionFactory();
-		Session s = sf.openSession();
+	public void save(Producto producto, int cantidad, Pedido pedido){
+		Session s = HibernateUtil.getSessionFactory().openSession();
 		s.beginTransaction();
-		List<ProductoEntity> recuperados = s.createQuery("from ProductoEntity where rubro.codigo = ?").setInteger(0, identificadorRubro).list();	
-		for(ProductoEntity pe : recuperados)
-			resultado.add(this.toNegocio(pe));
-		return resultado;
-	}
-
-	public List<Producto> findProductoBySubRubro(int identificadorSubRubro){
-		List<Producto> resultado = new ArrayList<Producto>();
-		SessionFactory sf = HibernateUtil.getSessionFactory();
-		Session s = sf.openSession();
-		s.beginTransaction();
-		List<ProductoEntity> recuperados = s.createQuery("from ProductoEntity where subRubro.codigo = ?").setInteger(0, identificadorSubRubro).list();	
-		for(ProductoEntity pe : recuperados)
-			resultado.add(this.toNegocio(pe));
-		return resultado;
-	}
-	
-	public List<Producto> findProductoByMarca(String marca){
-		List<Producto> resultado = new ArrayList<Producto>();
-		SessionFactory sf = HibernateUtil.getSessionFactory();
-		Session s = sf.openSession();
-		s.beginTransaction();
-		List<ProductoEntity> recuperados = s.createQuery("from ProductoEntity where marca = ?").setString(0, marca).list();	
-		for(ProductoEntity pe : recuperados)
-			resultado.add(this.toNegocio(pe));
-		return resultado;
-	}
-	
-	public void save(Producto producto){ 
-		ProductoEntity pe = this.toEntity(producto);
-		SessionFactory sf = HibernateUtil.getSessionFactory();
-		Session s = sf.openSession();
-		s.beginTransaction();
-		s.saveOrUpdate(pe);
-		s.getTransaction().commit();
-		producto.setIdentificador(pe.getIdentificador());
-	}
-
-
-	public void save(ItemPedido ip) {
-		ItemPedidoEntity ipe = toEntity(ip);
-		SessionFactory sf = HibernateUtil.getSessionFactory();
-		Session s = sf.openSession();
-		s.beginTransaction();
-		s.saveOrUpdate(ipe);
-		s.getTransaction().commit();
-		
-	}
-	
-
-	public void update(Producto producto) {
-		ProductoEntity pe = this.toEntity(producto);
-		SessionFactory sf = HibernateUtil.getSessionFactory();
-		Session s = sf.openSession();
-		s.beginTransaction();
-		s.update(pe);
+		String insert = String.format("insert into itemsPedido (numeroPedido, identificador, cantidad, precio) values (?,?,?,?)");
+		s.createSQLQuery(insert)
+			.setParameter(0, pedido.getNumeroPedido())
+			.setParameter(1, producto.getIdentificador())
+			.setParameter(2, cantidad)
+			.setParameter(3, producto.getPrecio())
+			.executeUpdate();
 		s.getTransaction().commit();
 	}
-
-	public void delete(Producto producto) {
-		ProductoEntity pe = this.toEntity(producto);
-		SessionFactory sf = HibernateUtil.getSessionFactory();
-		Session s = sf.openSession();
-		s.beginTransaction();
-		s.delete(pe);
-		s.getTransaction().commit();
-	}
-*/	
-	ItemPedido toNegocio(ItemPedidoEntity recuperado){
+	
+	ItemPedido toNegocio(ItemPedidoEntity recuperado) throws ProductoException{
 		Producto producto = ProductoDAO.getInstancia().findProductoByIdentificador(recuperado.getProducto().getIdentificador());
 		ItemPedido aux = new ItemPedido(recuperado.getNumero(), producto, recuperado.getCantidad(), recuperado.getPrecio());
 		return aux;	
 	}
-	
-	ItemPedidoEntity toEntity(ItemPedido item) {
-		ProductoEntity producto = ProductoDAO.getInstancia().toEntity(item.getProducto());
-		ItemPedidoEntity aux = new ItemPedidoEntity(item.getNumero(), producto, item.getCantidad(), item.getPrecio());
-		return aux;
-	}
-
-
 }

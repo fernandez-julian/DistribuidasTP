@@ -15,8 +15,11 @@ public class ItemPedidoEntity {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="numeroitem")
+	@Column(name="numeroItem")
 	private int numero;
+	@ManyToOne
+	@JoinColumn(name="numeroPedido")	
+	private PedidoEntity pedido;
 	@ManyToOne
 	@JoinColumn(name="identificador")
 	private ProductoEntity producto;
@@ -25,8 +28,16 @@ public class ItemPedidoEntity {
 	
 	public ItemPedidoEntity() {}
 	
-	public ItemPedidoEntity(int numero, ProductoEntity producto, int cantidad, float precio) {
+	public ItemPedidoEntity(int numero, PedidoEntity pedido, ProductoEntity producto, int cantidad, float precio) {
 		this.numero = numero;
+		this.pedido = pedido;
+		this.producto = producto;
+		this.cantidad = cantidad;
+		this.precio =  precio;
+	}
+
+	public ItemPedidoEntity(PedidoEntity pedido, ProductoEntity producto, int cantidad, float precio) {
+		this.pedido = pedido;
 		this.producto = producto;
 		this.cantidad = cantidad;
 		this.precio = precio;

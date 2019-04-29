@@ -15,6 +15,10 @@ public class RubroView implements Serializable{
 		this.habilitado = habilitado;
 	}
 
+	public RubroView() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public int getCodigo() {
 		return codigo;
 	}
