@@ -118,61 +118,123 @@ public class HomeController {
 
 	}
 
-	@RequestMapping(value = "/productos", method = RequestMethod.POST)
+	@RequestMapping(value = "/productos/nuevo", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	public @ResponseBody String addProducto(@RequestBody String productoView) throws JsonProcessingException {
-		ResponseObject response = new ResponseObject();
+		Respuesta respuesta = new Respuesta();
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			ProductoRequestView producto = objectMapper.readValue(productoView, ProductoRequestView.class);
 			Controlador.getInstancia().altaProducto(convertRequestObjectToView(producto));
-			response.setStatus(true);
+			respuesta.setEstado(true);
+			respuesta.setMensaje(Mensaje.PRODUCTO_CREADO.getDescripcion());
 		} catch (RubroException e) {
-			response.setStatus(false);
-			response.setMessage(e.getMessage());
+			respuesta.setEstado(false);
+			respuesta.setMensaje(e.getMessage());
+		} catch (SubRubroException e) {
+			respuesta.setEstado(false);
+			respuesta.setMensaje(e.getMessage());
 		} catch (IOException e) {
-			response.setStatus(false);
-			response.setMessage("Parametros faltantes o invalidos");
+			respuesta.setEstado(false);
+			respuesta.setMensaje("Parametros faltantes o invalidos");
 		}
-		return objectMapper.writeValueAsString(response);
+		return objectMapper.writeValueAsString(respuesta);
 	}
 
 	private ProductoView convertRequestObjectToView(ProductoRequestView producto) {
-		ProductoView productoView = new ProductoView();
-		productoView.setCodigoBarras(producto.getCodigoBarras());
-		productoView.setMarca(producto.getMarca());
-		productoView.setNombre(producto.getNombre());
 		RubroView rubro = new RubroView();
 		rubro.setCodigo(producto.getCodigoRubro());
-		productoView.setRubro(rubro);
 		SubRubroView subRubro = new SubRubroView();
 		subRubro.setCodigo(producto.getCodigoSubRubro());
-		productoView.setSubRubro(subRubro);
-		productoView.setPrecio(producto.getPrecio());
+		ProductoView productoView = new ProductoView(subRubro, rubro, producto.getNombre(), producto.getMarca(),
+				producto.getCodigoBarras(), producto.getPrecio());
+		;
 		return productoView;
 	}
 
-	@RequestMapping(value = "/productos/{identificador}", method = RequestMethod.DELETE)
-	public @ResponseBody String bajaProducto(@PathVariable(value = "identificador") int identificadorProducto)
-			throws JsonProcessingException {
-		ResponseObject response = new ResponseObject();
+	@RequestMapping(value = "/productos", method = RequestMethod.GET, produces = "application/json")
+	public @ResponseBody String getProductos() throws JsonProcessingException {
+		Respuesta respuesta = new Respuesta();
 		ObjectMapper objectMapper = new ObjectMapper();
-		ProductoView producto = new ProductoView();
-		producto.setIdentificador(identificadorProducto);
-		Controlador.getInstancia().bajaProducto(producto);
-		response.setStatus(true);
-		return objectMapper.writeValueAsString(response);
+		try {
+			respuesta.setDatos(objectMapper.writeValueAsString(Controlador.getInstancia().getProductos()));
+			respuesta.setEstado(true);
+			return objectMapper.writeValueAsString(respuesta);
+		} catch (JsonProcessingException e) {
+			respuesta.setEstado(false);
+			respuesta.setMensaje(Mensaje.ERROR.getDescripcion());
+			return objectMapper.writeValueAsString(respuesta);
+		}
 	}
 
-	@RequestMapping(value = "/productos/{identificador}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/productos/{identificador}", method = RequestMethod.POST, produces = "application/json")
+	public @ResponseBody String bajaProducto(@PathVariable(value = "identificador") int identificadorProducto)
+			throws JsonProcessingException {
+		Respuesta respuesta = new Respuesta();
+		ObjectMapper objectMapper = new ObjectMapper();
+		ProductoView producto = new ProductoView(null, null, null, null, null, 0);
+		producto.setIdentificador(identificadorProducto);
+		try {
+			Controlador.getInstancia().bajaProducto(producto);
+			respuesta.setMensaje(Mensaje.PRODUCTO_ELIMINADO.getDescripcion());
+			respuesta.setEstado(true);
+		} catch (ProductoException e) {
+			respuesta.setEstado(false);
+			respuesta.setMensaje(e.getMessage());
+		}
+		return objectMapper.writeValueAsString(respuesta);
+	}
+
+	@RequestMapping(value = "/productos/{identificador}", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	public @ResponseBody String modificarProducto(@PathVariable(value = "identificador") int identificadorProducto)
 			throws JsonProcessingException {
-		ResponseObject response = new ResponseObject();
+		Respuesta respuesta = new Respuesta();
 		ObjectMapper objectMapper = new ObjectMapper();
-		ProductoView producto = new ProductoView();
+		ProductoView producto = new ProductoView(null, null, null, null, null, 0);
 		producto.setIdentificador(identificadorProducto);
-		Controlador.getInstancia().modificaProducto(producto);
-		response.setStatus(true);
-		return objectMapper.writeValueAsString(response);
+		try {
+			Controlador.getInstancia().modificaProducto(producto);
+			respuesta.setMensaje(Mensaje.PRODUCTO_MODIFICADO.getDescripcion());
+			respuesta.setEstado(true);
+		} catch (ProductoException e) {
+			respuesta.setEstado(false);
+			respuesta.setMensaje(e.getMessage());
+		}
+		return objectMapper.writeValueAsString(respuesta);
 	}
-	
+
+	@RequestMapping(value = "/pedidos/{nroPedido}/productos", method = RequestMethod.POST, produces = "application/json")
+	public @ResponseBody String agregarProductosEnPedido(@PathVariable(value = "nroPedido") int nroPedido,
+			@RequestParam int idProducto, @RequestParam int cantidad) throws JsonProcessingException {
+		Respuesta respuesta = new Respuesta();
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			Controlador.getInstancia().agregarProductoEnPedido(nroPedido, idProducto, cantidad);
+			respuesta.setEstado(true);
+			respuesta.setMensaje(Mensaje.PRODUCTO_AGREGADO_EN_PEDIDO.getDescripcion());
+		} catch (PedidoException e) {
+			respuesta.setEstado(false);
+			respuesta.setMensaje(e.getMessage());
+		} catch (ProductoException e) {
+			respuesta.setEstado(false);
+			respuesta.setMensaje(e.getMessage());
+		}
+		return objectMapper.writeValueAsString(respuesta);
+	}
+
+	@RequestMapping(value = "/pedidos", method = RequestMethod.POST, produces = "application/json")
+	public @ResponseBody String crearPedido(@RequestParam String cuit) throws JsonProcessingException {
+		Respuesta respuesta = new Respuesta();
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			Map<String, Integer> datos = new HashMap<>();
+			datos.put("nroPedido", Controlador.getInstancia().crearPedido(cuit));
+			respuesta.setDatos(objectMapper.writeValueAsString(datos));
+			respuesta.setEstado(true);
+			respuesta.setMensaje(Mensaje.PEDIDO_CREADO.getDescripcion());
+		} catch (ClienteException e) {
+			respuesta.setEstado(false);
+			respuesta.setMensaje(e.getMessage());
+		}
+		return objectMapper.writeValueAsString(respuesta);
+	}	
 }
