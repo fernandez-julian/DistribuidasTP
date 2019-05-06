@@ -168,25 +168,6 @@ public class HomeController
                                  producto.getPrecio() );
     }
 
-    @RequestMapping( value = "/productos", method = RequestMethod.GET, produces = "application/json" )
-    public @ResponseBody String getProductos()
-        throws JsonProcessingException
-    {
-        Respuesta respuesta = new Respuesta();
-        ObjectMapper objectMapper = new ObjectMapper();
-        try
-        {
-            respuesta.setDatos( objectMapper.writeValueAsString( Controlador.getInstancia().getProductos() ) );
-            respuesta.setEstado( true );
-        }
-        catch ( JsonProcessingException e )
-        {
-            respuesta.setEstado( false );
-            respuesta.setMensaje( Mensaje.ERROR.getDescripcion() );
-        }
-        return objectMapper.writeValueAsString( respuesta );
-    }
-
     @RequestMapping( value = "/allProductosByRubro", method = RequestMethod.GET, produces = "application/json" )
     public @ResponseBody String allProductosByRubro( @RequestParam( value = "codigo", required = true ) int codigo )
         throws IOException
@@ -217,14 +198,14 @@ public class HomeController
         return mapper.writeValueAsString( respuesta );
     }
 
-    @RequestMapping( value = "/productos/{identificador}", method = RequestMethod.POST, produces = "application/json" )
-    public @ResponseBody String bajaProducto( @PathVariable( value = "identificador" ) int identificadorProducto )
+    @RequestMapping( value = "/productos/eliminar", method = RequestMethod.POST, produces = "application/json" )
+    public @ResponseBody String bajaProducto( @RequestParam( value = "idProducto", required = true ) int idProducto )
         throws JsonProcessingException
     {
         Respuesta respuesta = new Respuesta();
         ObjectMapper objectMapper = new ObjectMapper();
         ProductoView producto = new ProductoView( null, null, null, null, null, 0 );
-        producto.setIdentificador( identificadorProducto );
+        producto.setIdentificador( idProducto );
         try
         {
             Controlador.getInstancia().bajaProducto( producto );
@@ -239,14 +220,14 @@ public class HomeController
         return objectMapper.writeValueAsString( respuesta );
     }
 
-    @RequestMapping( value = "/productos/modificar/{identificador}", method = RequestMethod.POST, produces = "application/json", consumes = "application/json" )
-    public @ResponseBody String modificarProducto( @PathVariable( value = "identificador" ) int identificadorProducto )
+    @RequestMapping( value = "/productos/modificar", method = RequestMethod.POST, produces = "application/json" )
+    public @ResponseBody String modificarProducto( @RequestParam( value = "idProducto", required = true ) int idProducto )
         throws JsonProcessingException
     {
         Respuesta respuesta = new Respuesta();
         ObjectMapper objectMapper = new ObjectMapper();
         ProductoView producto = new ProductoView( null, null, null, null, null, 0 );
-        producto.setIdentificador( identificadorProducto );
+        producto.setIdentificador( idProducto );
         try
         {
             Controlador.getInstancia().modificaProducto( producto );
@@ -263,7 +244,8 @@ public class HomeController
 
     @RequestMapping( value = "/pedidos/{nroPedido}/productos", method = RequestMethod.POST, produces = "application/json" )
     public @ResponseBody String agregarProductosEnPedido( @PathVariable( value = "nroPedido" ) int nroPedido,
-                                                          @RequestParam int idProducto, @RequestParam int cantidad )
+                                                          @RequestParam( value = "idProducto", required = true ) int idProducto,
+                                                          @RequestParam( value = "cantidad", required = true ) int cantidad )
         throws JsonProcessingException
     {
         Respuesta respuesta = new Respuesta();
@@ -288,7 +270,7 @@ public class HomeController
     }
 
     @RequestMapping( value = "/pedidos", method = RequestMethod.POST, produces = "application/json" )
-    public @ResponseBody String crearPedido( @RequestParam String cuit )
+    public @ResponseBody String crearPedido( @RequestParam( value = "cuit", required = true ) String cuit )
         throws JsonProcessingException
     {
         Respuesta respuesta = new Respuesta();
