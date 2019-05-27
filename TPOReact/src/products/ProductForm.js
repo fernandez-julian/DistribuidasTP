@@ -80,20 +80,21 @@ class ProductForm extends React.Component {
             requestBody.precio = parseFloat(this.state.amount);
             requestBody.codigoRubro = this.state.item;
             requestBody.codigoSubRubro = this.state.subitem;
-            fetch('/TPOSpring/productos/nuevo',{
-                method:"POST",
-                body: JSON.stringify(requestBody), 
+            fetch('/TPOSpring/productos/nuevo', {
+                method: "POST",
+                body: JSON.stringify(requestBody),
                 headers: new Headers({
-                'Content-Type': 'application/json'
-              }), })
-            .then(response => { return response.json() })
-            .then(response => {
-                if (response.estado === true) {
-                    this.props.closeModal(new String(response.mensaje));
-                }else{
-                    this.setState({ helperText: response.mensaje });
-                }
-            });
+                    'Content-Type': 'application/json'
+                }),
+            })
+                .then(response => { return response.json() })
+                .then(response => {
+                    if (response.estado === true) {
+                        this.props.closeModal(new String(response.mensaje));
+                    } else {
+                        this.setState({ helperText: response.mensaje });
+                    }
+                });
         }
     }
 

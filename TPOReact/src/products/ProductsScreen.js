@@ -19,6 +19,9 @@ import TablePagination from '@material-ui/core/TablePagination';
 import Modal from '@material-ui/core/Modal';
 import Snackbar from '@material-ui/core/Snackbar';
 import ProductForm from './ProductForm'
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import { MenuItem, Select } from '@material-ui/core';
 
 const styles = theme => ({
     root: {
@@ -58,6 +61,10 @@ const styles = theme => ({
     tableCell: {
         paddingRight: 4,
         paddingLeft: 5
+    },
+    formControl: {
+        margin: theme.spacing.unit,
+        minWidth: 120,
     }
 });
 
@@ -66,16 +73,19 @@ class ProductosScreen extends React.Component {
         super();
         this.state = {
             productos: [], loading: false, message: "", page: 0,
-            rowsPerPage: 6, rows: [], open: false, openModal: false
+            rowsPerPage: 6, rows: [], open: false, openModal: false, items: [], item: '',
+            subitems: [], subitem: ''
         };
         this.props = props;
     }
     componentDidMount() {
         this.setState({ loading: true });
         this.getProducts();
+        this.getRubros();
+        this.getSubrubros();
     }
 
-    getProducts(){
+    getProducts() {
         fetch('/TPOSpring/allProductos')
             .then(response => { return response.json(); })
             .then(response => {
@@ -88,16 +98,36 @@ class ProductosScreen extends React.Component {
             });
     }
 
+    getRubros() {
+        fetch('/TPOSpring/allRubros')
+            .then(response => { return response.json() })
+            .then(response => {
+                if (response.estado === true) {
+                    this.setState({ items: JSON.parse(response.datos) });
+                }
+            });
+    }
+
+    getSubrubros() {
+        fetch('/TPOSpring/allSubRubros')
+            .then(response => { return response.json() })
+            .then(response => {
+                if (response.estado === true) {
+                    this.setState({ subitems: JSON.parse(response.datos) });
+                }
+            });
+    }
+
     onDelete(id, index) {
         fetch('/TPOSpring/productos/eliminar?idProducto=' + id, { method: "POST" })
             .then(response => { return response.json(); })
             .then(response => {
-                if(response.estado===true){
+                if (response.estado === true) {
                     const prods = this.state.productos.filter(prod => prod.identificador !== id);
-                    this.setState({ productos: prods});
+                    this.setState({ productos: prods });
                 }
                 this.setState({ message: response.mensaje, open: true });
-            });        
+            });
     }
 
     onModify(id) {
@@ -127,6 +157,40 @@ class ProductosScreen extends React.Component {
         }
         this.setState({ openModal: false });
     };
+
+    handleFilter = name => event => {
+        this.setState({ [name]: event.target.value });
+        console.log(name);
+        console.log(event);
+        if (name === "item") {
+            this.filterProductsByItem(event.target.value);
+            this.setState({ subitem: '' });
+        }
+        if (name === "subitem") {
+            this.filterProductsBySubItem(event.target.value);
+            this.setState({ item: '' });
+        }
+    };
+
+    filterProductsByItem(item) {
+        fetch('/TPOSpring/allProductosByRubro?codigo=' + item)
+            .then(response => { return response.json() })
+            .then(response => {
+                if (response.estado === true) {
+                    this.setState({ productos: JSON.parse(response.datos) });
+                }
+            });
+    }
+
+    filterProductsBySubItem(subitem) {
+        fetch('/TPOSpring/allProductosBySubRubro?codigo=' + subitem)
+            .then(response => { return response.json() })
+            .then(response => {
+                if (response.estado === true) {
+                    this.setState({ productos: JSON.parse(response.datos) });
+                }
+            });
+    }
 
     onAddNewProduct = () => {
         this.setState({ openModal: true });
@@ -208,6 +272,42 @@ class ProductosScreen extends React.Component {
                                             onChangePage={this.handleChangePage}
                                             onChangeRowsPerPage={this.handleChangeRowsPerPage}
                                         />
+                                        <TableCell colSpan={3}>
+                                            <FormControl fullWidth className={classes.formControl}>
+                                                <InputLabel htmlFor="item">Filtrar por rubro</InputLabel>
+                                                <Select
+                                                    id="item"
+                                                    value={this.state.item}
+                                                    onChange={this.handleFilter("item")}
+                                                    name="item">
+                                                    <MenuItem value="" disabled>
+                                                        Rubro          </MenuItem>
+                                                    {this.state.items.map(option => (
+                                                        <MenuItem key={option.codigo} value={option.codigo}>
+                                                            {option.descripcion}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </TableCell>
+                                        <TableCell colSpan={3}>
+                                            <FormControl fullWidth className={classes.formControl}>
+                                                <InputLabel htmlFor="subitem">Filtrar por subrubro</InputLabel>
+                                                <Select
+                                                    id="subitem"
+                                                    value={this.state.subitem}
+                                                    onChange={this.handleFilter("subitem")}
+                                                    name="subitem">
+                                                    <MenuItem value="" disabled>
+                                                        SubRubro          </MenuItem>
+                                                    {this.state.subitems.map(option => (
+                                                        <MenuItem key={option.codigo} value={option.codigo}>
+                                                            {option.descripcion}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </TableCell>
                                     </TableRow>
                                 </TableFooter>
                             </Table>
