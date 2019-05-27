@@ -79,7 +79,6 @@ class ProductosScreen extends React.Component {
         fetch('/TPOSpring/allProductos')
             .then(response => { return response.json(); })
             .then(response => {
-                console.log(response);
                 if (response.estado === true) {
                     this.setState({ productos: JSON.parse(response.datos), rows: JSON.parse(response.datos) });
                 } else {

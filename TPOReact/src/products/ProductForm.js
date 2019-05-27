@@ -80,7 +80,6 @@ class ProductForm extends React.Component {
             requestBody.precio = parseFloat(this.state.amount);
             requestBody.codigoRubro = this.state.item;
             requestBody.codigoSubRubro = this.state.subitem;
-            console.log(requestBody);
             fetch('/TPOSpring/productos/nuevo',{
                 method:"POST",
                 body: JSON.stringify(requestBody), 
