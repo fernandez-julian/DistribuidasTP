@@ -72,21 +72,41 @@ class ProductosScreen extends React.Component {
     }
     componentDidMount() {
         this.setState({ loading: true });
-        fetch('https://jsonplaceholder.typicode.com/todos')
-            .then(response => { return response.json() })
+        this.getProducts();
+    }
+
+    getProducts(){
+        fetch('/TPOSpring/allProductos')
+            .then(response => { return response.json(); })
             .then(response => {
-                this.setState({ productos: response, rows: response });
+                console.log(response);
+                if (response.estado === true) {
+                    this.setState({ productos: JSON.parse(response.datos), rows: JSON.parse(response.datos) });
+                } else {
+                    this.setState({ message: response.mensaje, open: true });
+                }
                 this.setState({ loading: false });
             });
     }
 
     onDelete(id, index) {
-        const prods = this.state.productos.filter(prod => prod.id !== id);
-        this.setState({ productos: prods, message: "Producto eliminado", open: true });
+        fetch('/TPOSpring/productos/eliminar?idProducto=' + id, { method: "POST" })
+            .then(response => { return response.json(); })
+            .then(response => {
+                if(response.estado===true){
+                    const prods = this.state.productos.filter(prod => prod.identificador !== id);
+                    this.setState({ productos: prods});
+                }
+                this.setState({ message: response.mensaje, open: true });
+            });        
     }
 
     onModify(id) {
-        alert(id);
+        fetch('/TPOSpring/productos/modificar?idProducto=' + id, { method: "POST" })
+            .then(response => { return response.json(); })
+            .then(response => {
+                this.setState({ message: response.mensaje, open: true });
+            });
     }
 
     handleChangePage = (event, page) => {
@@ -104,8 +124,9 @@ class ProductosScreen extends React.Component {
     handleModalClose = (value) => {
         if (value instanceof String && value !== '') {
             this.setState({ message: value, open: true });
+            this.getProducts();
         }
-        this.setState({ openModal: false});
+        this.setState({ openModal: false });
     };
 
     onAddNewProduct = () => {
@@ -153,20 +174,21 @@ class ProductosScreen extends React.Component {
                                             </TableCell>
                                         </TableRow> :
                                         this.state.productos.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((producto, index) => (
-                                            <TableRow key={producto.id}>
+                                            <TableRow key={producto.identificador}>
                                                 <TableCell className={classes.tableCell}>
-                                                    {producto.title}
+                                                    {producto.identificador}
                                                 </TableCell>
-                                                <TableCell className={classes.tableCell}>{producto.userId}</TableCell>
-                                                <TableCell className={classes.tableCell}>{producto.userId}</TableCell>
-                                                <TableCell className={classes.tableCell}>{producto.title}</TableCell>
-                                                <TableCell className={classes.tableCell}>{producto.title}</TableCell>
-                                                <TableCell className={classes.tableCell}>{producto.title}</TableCell>
-                                                <TableCell className={classes.tableCell}>{producto.title}</TableCell>
-                                                <TableCell className={classes.tableCell}><Button variant="contained" color="secondary" className="button" onClickCapture={this.onDelete.bind(this, producto.id, index)}>
+                                                <TableCell className={classes.tableCell}>{producto.nombre}</TableCell>
+                                                <TableCell className={classes.tableCell}>{producto.marca}</TableCell>
+                                                <TableCell className={classes.tableCell}>{producto.codigoBarras}</TableCell>
+                                                <TableCell className={classes.tableCell}>{producto.precio}</TableCell>
+                                                <TableCell className={classes.tableCell}>{producto.rubro.descripcion}</TableCell>
+                                                <TableCell className={classes.tableCell}>{producto.subRubro.descripcion}</TableCell>
+                                                <TableCell className={classes.tableCell}><Button variant="contained" color="secondary" className="button" onClickCapture={this.onDelete.bind(this, producto.identificador, index)}>
                                                     Eliminar        <DeleteIcon />
                                                 </Button></TableCell>
-                                                <TableCell className={classes.tableCell}><Button variant="contained" color="primary" className="button" onClickCapture={this.onModify.bind(this, producto.id)}>
+                                                <TableCell className={classes.tableCell}><Button variant="contained" color="primary" className="button" onClickCapture={this.onModify.bind(this, producto.identificador
+                                                )}>
                                                     Editar        <Edit />
                                                 </Button></TableCell>
                                             </TableRow>

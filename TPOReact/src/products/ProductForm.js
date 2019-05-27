@@ -48,10 +48,19 @@ class ProductForm extends React.Component {
     };
 
     componentDidMount() {
-        fetch('https://jsonplaceholder.typicode.com/users')
+        fetch('/TPOSpring/allRubros')
             .then(response => { return response.json() })
             .then(response => {
-                this.setState({ items: response, subitems: response });
+                if (response.estado === true) {
+                    this.setState({ items: JSON.parse(response.datos) });
+                }
+            });
+        fetch('/TPOSpring/allSubRubros')
+            .then(response => { return response.json() })
+            .then(response => {
+                if (response.estado === true) {
+                    this.setState({ subitems: JSON.parse(response.datos) });
+                }
             });
     }
 
@@ -68,10 +77,24 @@ class ProductForm extends React.Component {
             requestBody.nombre = this.state.name;
             requestBody.marca = this.state.brand;
             requestBody.codigoBarras = this.state.code;
-            requestBody.precio = this.state.amount;
+            requestBody.precio = parseFloat(this.state.amount);
             requestBody.codigoRubro = this.state.item;
             requestBody.codigoSubRubro = this.state.subitem;
-            this.props.closeModal(new String("Producto añadido"));
+            console.log(requestBody);
+            fetch('/TPOSpring/productos/nuevo',{
+                method:"POST",
+                body: JSON.stringify(requestBody), 
+                headers: new Headers({
+                'Content-Type': 'application/json'
+              }), })
+            .then(response => { return response.json() })
+            .then(response => {
+                if (response.estado === true) {
+                    this.props.closeModal(new String(response.mensaje));
+                }else{
+                    this.setState({ helperText: response.mensaje });
+                }
+            });
         }
     }
 
@@ -138,8 +161,8 @@ class ProductForm extends React.Component {
                                     name="item"
                                     displayEmpty>
                                     {this.state.items.map(option => (
-                                        <MenuItem key={option.id} value={option.name}>
-                                            {option.username}
+                                        <MenuItem key={option.codigo} value={option.codigo}>
+                                            {option.descripcion}
                                         </MenuItem>
                                     ))}
                                 </Select>
@@ -156,15 +179,15 @@ class ProductForm extends React.Component {
                                     name="subitem"
                                     displayEmpty>
                                     {this.state.subitems.map(option => (
-                                        <MenuItem key={option.id} value={option.name}>
-                                            {option.username}
+                                        <MenuItem key={option.codigo} value={option.codigo}>
+                                            {option.descripcion}
                                         </MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
                         </Grid>
                         <Grid item xs={12}>
-                            <Typography variant="subtitle" color="error" align="left">{this.state.helperText}</Typography>
+                            <Typography variant="subtitle1" color="error" align="left">{this.state.helperText}</Typography>
                         </Grid>
                         <Button variant="contained" color="primary" className={classes.button} type="submit" fullWidth>
                             Crear</Button>
