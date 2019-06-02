@@ -22,16 +22,14 @@ import ProductForm from './ProductForm'
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import { MenuItem, Select } from '@material-ui/core';
+import ProductPriceForm from './ProductPriceForm';
 
-const styles = theme => ({
+let styles = theme => ({
     root: {
         flexGrow: 1,
         overflow: 'hidden',
         padding: `0 ${theme.spacing.unit * 3}px`,
 
-    },
-    addIcon: {
-        marginRight: theme.spacing.unit,
     },
     paper: {
         maxWidth: '95%',
@@ -51,7 +49,8 @@ const styles = theme => ({
     snackbar: {
         margin: theme.spacing.unit,
         position: 'absolute',
-    }, addFab: {
+    },
+    addFab: {
         margin: theme.spacing.unit,
         position: 'absolute',
         bottom: theme.spacing.unit * 2,
@@ -74,18 +73,18 @@ class ProductosScreen extends React.Component {
         this.state = {
             productos: [], loading: false, message: "", page: 0,
             rowsPerPage: 6, rows: [], open: false, openModal: false, items: [], item: '',
-            subitems: [], subitem: ''
+            subitems: [], subitem: '', openModifyModal: false
         };
         this.props = props;
     }
-    componentDidMount() {
+    componentDidMount = () => {
         this.setState({ loading: true });
         this.getProducts();
         this.getRubros();
         this.getSubrubros();
     }
 
-    getProducts() {
+    getProducts = () => {
         fetch('/TPOSpring/allProductos')
             .then(response => { return response.json(); })
             .then(response => {
@@ -98,7 +97,7 @@ class ProductosScreen extends React.Component {
             });
     }
 
-    getRubros() {
+    getRubros = () => {
         fetch('/TPOSpring/allRubros')
             .then(response => { return response.json() })
             .then(response => {
@@ -108,7 +107,7 @@ class ProductosScreen extends React.Component {
             });
     }
 
-    getSubrubros() {
+    getSubrubros = () => {
         fetch('/TPOSpring/allSubRubros')
             .then(response => { return response.json() })
             .then(response => {
@@ -118,24 +117,20 @@ class ProductosScreen extends React.Component {
             });
     }
 
-    onDelete(id, index) {
+    onDelete = (id, index) => {
         fetch('/TPOSpring/productos/eliminar?idProducto=' + id, { method: "POST" })
             .then(response => { return response.json(); })
             .then(response => {
                 if (response.estado === true) {
-                    const prods = this.state.productos.filter(prod => prod.identificador !== id);
+                    let prods = this.state.productos.filter(prod => prod.identificador !== id);
                     this.setState({ productos: prods });
                 }
                 this.setState({ message: response.mensaje, open: true });
             });
     }
 
-    onModify(id) {
-        fetch('/TPOSpring/productos/modificar?idProducto=' + id, { method: "POST" })
-            .then(response => { return response.json(); })
-            .then(response => {
-                this.setState({ message: response.mensaje, open: true });
-            });
+    onModify = (id) => {
+        this.setState({ openModifyModal: true });
     }
 
     handleChangePage = (event, page) => {
@@ -157,11 +152,16 @@ class ProductosScreen extends React.Component {
         }
         this.setState({ openModal: false });
     };
+    handleModifyModalClose = (value) => {
+        if (value instanceof String && value !== '') {
+            this.setState({ message: value, open: true });
+            this.getProducts();
+        }
+        this.setState({ openModifyModal: false });
+    };
 
     handleFilter = name => event => {
         this.setState({ [name]: event.target.value });
-        console.log(name);
-        console.log(event);
         if (name === "item") {
             this.filterProductsByItem(event.target.value);
             this.setState({ subitem: '' });
@@ -172,7 +172,7 @@ class ProductosScreen extends React.Component {
         }
     };
 
-    filterProductsByItem(item) {
+    filterProductsByItem = (item) => {
         fetch('/TPOSpring/allProductosByRubro?codigo=' + item)
             .then(response => { return response.json() })
             .then(response => {
@@ -182,7 +182,7 @@ class ProductosScreen extends React.Component {
             });
     }
 
-    filterProductsBySubItem(subitem) {
+    filterProductsBySubItem = (subitem) => {
         fetch('/TPOSpring/allProductosBySubRubro?codigo=' + subitem)
             .then(response => { return response.json() })
             .then(response => {
@@ -196,9 +196,9 @@ class ProductosScreen extends React.Component {
         this.setState({ openModal: true });
     }
 
-    render() {
-        const { classes } = this.props;
-        const { rows, rowsPerPage, page, open } = this.state;
+    render = () => {
+        let { classes } = this.props;
+        let { rows, rowsPerPage, page, open } = this.state;
         return (
             <div className={classes.root} >
                 <Grid container >
@@ -226,7 +226,6 @@ class ProductosScreen extends React.Component {
                                         <TableCell className={classes.tableCell}>SubRubro</TableCell>
                                         <TableCell className={classes.tableCell}></TableCell>
                                         <TableCell className={classes.tableCell}></TableCell>
-                                        <TableCell className={classes.tableCell}></TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -238,6 +237,12 @@ class ProductosScreen extends React.Component {
                                         </TableRow> :
                                         this.state.productos.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((producto, index) => (
                                             <TableRow key={producto.identificador}>
+                                                <Modal
+                                                    aria-labelledby="simple-modal-title"
+                                                    aria-describedby="simple-modal-description"
+                                                    open={this.state.openModifyModal}
+                                                    onClose={this.handleModifyModalClose.bind(this, "")}
+                                                ><ProductPriceForm id={producto.identificador} closeModal={this.handleModifyModalClose} /></Modal>
                                                 <TableCell className={classes.tableCell}>
                                                     {producto.identificador}
                                                 </TableCell>

@@ -15,9 +15,13 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { mainListItems } from './Items';
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import ProductosScreen from '../products/ProductsScreen'
-const drawerWidth = 240;
+import OrdersScreen from '../orders/OrdersScreen'
+import LoginForm from '../login/LoginForm';
+import { Modal, Snackbar } from '@material-ui/core';
 
-const styles = theme => ({
+let drawerWidth = 240;
+
+let styles = theme => ({
   root: {
     display: 'flex',
   },
@@ -87,6 +91,9 @@ const styles = theme => ({
 class App extends React.Component {
   state = {
     open: true,
+    openModal: false,
+    openSnackbar: false,
+    message: '',
   };
 
   handleDrawerOpen = () => {
@@ -97,16 +104,35 @@ class App extends React.Component {
     this.setState({ open: false });
   };
 
-  render() {
-    const { classes } = this.props;
+  onLogin = () => {
+    this.setState({ openModal: true });
+  }
 
+  handleModalClose = (value) => {
+    if (value instanceof String && value !== '') {
+      this.setState({ message: value, openSnackbar: true });
+    }
+    this.setState({ openModal: false });
+  };
+
+  handleSnackbarClose = () => {
+    this.setState({ openSnackbar: false });
+  };
+
+  render = () => {
+    let { classes } = this.props;
     return (
       <div className={classes.root}>
         <CssBaseline />
         <AppBar
           position="absolute"
-          className={classNames(classes.appBar, this.state.open && classes.appBarShift)}
-        >
+          className={classNames(classes.appBar, this.state.open && classes.appBarShift)}        >
+          <Modal
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
+            open={this.state.openModal}
+            onClose={this.handleModalClose.bind(this)}
+          ><LoginForm closeModal={this.handleModalClose} /></Modal>
           <Toolbar disableGutters={!this.state.open} className={classes.toolbar}>
             <IconButton
               color="inherit"
@@ -127,7 +153,7 @@ class App extends React.Component {
               className={classes.title}
             >
             </Typography>
-            <Button color="secondary">
+            <Button color="secondary" onClickCapture={this.onLogin.bind(this)}>
               Iniciar sesión </Button>
           </Toolbar>
         </AppBar>
@@ -150,7 +176,17 @@ class App extends React.Component {
           </Drawer>
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
+            <Route path="/pedidos/" component={OrdersScreen} />
             <Route path="/productos/" component={ProductosScreen} />
+            <Snackbar
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+              open={this.state.openSnackbar}
+              onClose={this.handleSnackbarClose}
+              ContentProps={{
+                'aria-describedby': 'message-id',
+              }}
+              message={<span id="message-id">{this.state.message}</span>}
+            />
           </main>
         </Router>
       </div>
