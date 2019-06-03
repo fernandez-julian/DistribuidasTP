@@ -9,7 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import Modal from '@material-ui/core/Modal';
 import Snackbar from '@material-ui/core/Snackbar';
 import OrderForm from './OrderForm'
-import { IconButton, Divider, InputBase } from '@material-ui/core';
+import { IconButton, Divider, InputBase, InputAdornment } from '@material-ui/core';
 import Order from './Order';
 
 let styles = theme => ({
@@ -35,7 +35,7 @@ let styles = theme => ({
     },
     input: {
         marginLeft: 8,
-        flex: 1,
+        flex: 'auto',
     },
     iconButton: {
         padding: 10,
@@ -124,15 +124,19 @@ class OrdersScreen extends React.Component {
                                 onClose={this.handleModalClose.bind(this, "")}
                                 style={{ position: 'absolute' }}
                             ><OrderForm closeModal={this.handleModalClose} /></Modal>
-                            <Grid container alignItems="flex-start" justify="flex-start">
-                                <Grid item xs={4}>
-                                    <InputBase className={classes.input} placeholder="Buscar por número de pedido" onChange={this.handleChange('billNumber')} value={this.state.billNumber} type="number" inputProps={{ min: "0", max: "10000000000", step: "1" }} />
+                            <InputBase
+                                fullWidth
+                                className={classes.input}
+                                placeholder="Buscar por número de pedido"
+                                onChange={this.handleChange('billNumber')}
+                                value={this.state.billNumber}
+                                type="number"
+                                inputProps={{ min: "0", max: "10000000000", step: "1" }}
+                                endAdornment={<InputAdornment position="end">
                                     <IconButton className={classes.iconButton} aria-label="Search" onClickCapture={this.onSearchBill.bind(this)}>
                                         <SearchIcon />
-                                    </IconButton>
-                                    <Divider />
-                                </Grid>
-                            </Grid>
+                                    </IconButton></InputAdornment>} />
+                            <Divider />
                             {this.state.order ? (
                                 <Order
                                     order={this.state.order}

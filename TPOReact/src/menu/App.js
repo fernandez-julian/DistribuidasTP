@@ -1,4 +1,5 @@
 import React from 'react';
+import 'typeface-roboto';
 import classNames from 'classnames';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
@@ -16,8 +17,11 @@ import { mainListItems } from './Items';
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import ProductosScreen from '../products/ProductsScreen'
 import OrdersScreen from '../orders/OrdersScreen'
-import LoginForm from '../login/LoginForm';
-import { Modal, Snackbar } from '@material-ui/core';
+import { Snackbar } from '@material-ui/core';
+import Home from './Home';
+import LogIn from '../login/LogIn';
+import ChagePassword from '../login/ChagePassword';
+import NavBar from '../login/NavBar';
 
 let drawerWidth = 240;
 
@@ -94,6 +98,7 @@ class App extends React.Component {
     openModal: false,
     openSnackbar: false,
     message: '',
+    loggedIn: false
   };
 
   handleDrawerOpen = () => {
@@ -104,8 +109,8 @@ class App extends React.Component {
     this.setState({ open: false });
   };
 
-  onLogin = () => {
-    this.setState({ openModal: true });
+  onLogout = () => {
+    this.setState({ loggedIn: false });
   }
 
   handleModalClose = (value) => {
@@ -119,78 +124,87 @@ class App extends React.Component {
     this.setState({ openSnackbar: false });
   };
 
+  logIn = () => {
+    this.setState({ loggedIn: true });
+  }
+
   render = () => {
     let { classes } = this.props;
-    return (
-      <div className={classes.root}>
-        <CssBaseline />
-        <AppBar
-          position="absolute"
-          className={classNames(classes.appBar, this.state.open && classes.appBarShift)}        >
-          <Modal
-            aria-labelledby="simple-modal-title"
-            aria-describedby="simple-modal-description"
-            open={this.state.openModal}
-            onClose={this.handleModalClose.bind(this)}
-          ><LoginForm closeModal={this.handleModalClose} /></Modal>
-          <Toolbar disableGutters={!this.state.open} className={classes.toolbar}>
-            <IconButton
-              color="inherit"
-              aria-label="Open drawer"
-              onClick={this.handleDrawerOpen}
-              className={classNames(
-                classes.menuButton,
-                this.state.open && classes.menuButtonHidden,
-              )}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography
-              component="h1"
-              variant="h6"
-              color="inherit"
-              noWrap
-              className={classes.title}
-            >
-            </Typography>
-            <Button color="secondary" onClickCapture={this.onLogin.bind(this)}>
-              Iniciar sesión </Button>
-          </Toolbar>
-        </AppBar>
-        <Router>
-          <Drawer
-            variant="permanent"
-            classes={{
-              paper: classNames(classes.drawerPaper, !this.state.open && classes.drawerPaperClose),
-            }}
-            open={this.state.open}
-          >
-            <div className={classes.toolbarIcon}>
-              <IconButton onClick={this.handleDrawerClose}>
-                <ChevronLeftIcon />
+    if (this.state.loggedIn) {
+      return (
+        <div className={classes.root}>
+          <CssBaseline />
+          <AppBar
+            position="absolute"
+            className={classNames(classes.appBar, this.state.open && classes.appBarShift)}        >
+            <Toolbar disableGutters={!this.state.open} className={classes.toolbar}>
+              <IconButton
+                color="inherit"
+                aria-label="Open drawer"
+                onClick={this.handleDrawerOpen}
+                className={classNames(
+                  classes.menuButton,
+                  this.state.open && classes.menuButtonHidden,
+                )}
+              >
+                <MenuIcon />
               </IconButton>
-            </div>
-            <Divider />
-            <List>{mainListItems}</List>
-            <Divider />
-          </Drawer>
-          <main className={classes.content}>
-            <div className={classes.appBarSpacer} />
-            <Route path="/pedidos/" component={OrdersScreen} />
-            <Route path="/productos/" component={ProductosScreen} />
-            <Snackbar
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-              open={this.state.openSnackbar}
-              onClose={this.handleSnackbarClose}
-              ContentProps={{
-                'aria-describedby': 'message-id',
+              <Typography
+                component="h1"
+                variant="h6"
+                color="inherit"
+                noWrap
+                className={classes.title}
+              >
+              </Typography>
+              <Button color="secondary" onClickCapture={this.onLogout.bind(this)}>
+                Cerrar sesión </Button>
+            </Toolbar>
+          </AppBar>
+          <Router>
+            <Drawer
+              variant="permanent"
+              classes={{
+                paper: classNames(classes.drawerPaper, !this.state.open && classes.drawerPaperClose),
               }}
-              message={<span id="message-id">{this.state.message}</span>}
-            />
-          </main>
-        </Router>
-      </div>
-    );
+              open={this.state.open}
+            >
+              <div className={classes.toolbarIcon}>
+                <IconButton onClick={this.handleDrawerClose}>
+                  <ChevronLeftIcon />
+                </IconButton>
+              </div>
+              <Divider />
+              <List>{mainListItems}</List>
+              <Divider />
+            </Drawer>
+            <main className={classes.content}>
+              <div className={classes.appBarSpacer} />
+              <Route path="/pedidos/" component={OrdersScreen} />
+              <Route path="/productos/" component={ProductosScreen} />
+              <Snackbar
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                open={this.state.openSnackbar}
+                onClose={this.handleSnackbarClose}
+                ContentProps={{
+                  'aria-describedby': 'message-id',
+                }}
+                message={<span id="message-id">{this.state.message}</span>}
+              />
+            </main>
+          </Router>
+        </div>
+      );
+    }
+    else {
+      return <Router>
+        <NavBar />
+        <Route exact path="/" component={Home} />
+        <Route path="/home" component={Home} />
+        <Route path="/LogIn" render={() => <LogIn logIn={this.logIn} />} />
+        <Route path="/ChagePassword" component={ChagePassword} />
+      </Router>
+    }
   }
 }
 

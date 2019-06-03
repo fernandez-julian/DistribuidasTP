@@ -151,7 +151,7 @@ class ProductForm extends React.Component {
                     </Grid>
                     <Grid item xs={12}>
                         <FormControl fullWidth className={classes.margin} required>
-                            <InputLabel htmlFor="item">Rubro</InputLabel>
+                            <InputLabel shrink htmlFor="item">Rubro</InputLabel>
                             <Select
                                 id="item"
                                 value={this.state.item}
@@ -169,7 +169,7 @@ class ProductForm extends React.Component {
                     </Grid>
                     <Grid item xs={12}>
                         <FormControl fullWidth className={classes.margin} required>
-                            <InputLabel htmlFor="subitem">SubRubro</InputLabel>
+                            <InputLabel shrink htmlFor="subitem">SubRubro</InputLabel>
                             <Select
                                 id="subitem"
                                 value={this.state.subitem}

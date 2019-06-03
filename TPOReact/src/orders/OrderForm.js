@@ -6,7 +6,7 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import { MenuItem, Select } from '@material-ui/core';
+import { MenuItem, Select, Input } from '@material-ui/core';
 
 let styles = theme => ({
     container: {
@@ -30,7 +30,7 @@ let styles = theme => ({
         transform: 'translate(-50%, -50%) !important',
     },
     margin: {
-        margin: theme.spacing.unit,
+        margin: theme.spacing(1),
     },
 });
 class OrderForm extends React.Component {
@@ -82,13 +82,14 @@ class OrderForm extends React.Component {
             <form className={classes.container} noValidate autoComplete="off" onSubmit={this.onSubmit.bind(this)}>
                 <Grid item xs={12}>
                     <FormControl fullWidth className={classes.margin} required>
-                        <InputLabel htmlFor="cuit">Cliente</InputLabel>
+                        <InputLabel shrink htmlFor="cuit">Cliente</InputLabel>
                         <Select
                             id="cuit"
                             value={this.state.cuit}
                             onChange={this.handleChange('cuit')}
                             error={!this.state.cuit}
                             name="cuit"
+                            input={<Input name="cuit" id="cuit" />}
                             displayEmpty>
                             {this.state.clients.map(client => (
                                 <MenuItem key={client.numero} value={client.cuil}>
