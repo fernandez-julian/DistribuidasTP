@@ -39,6 +39,9 @@ let styles = theme => ({
     },
     iconButton: {
         padding: 10,
+    },
+    typography: {
+        color: 'black',
     }
 });
 
@@ -113,7 +116,7 @@ class OrdersScreen extends React.Component {
                 <Grid container >
                     <Grid item xs={12}>
                         <Paper className={classes.paper}>
-                            <Typography variant="h5">Pedidos</Typography>
+                            <Typography className={classes.typography} variant="h5">Pedidos</Typography>
                             <Fab variant="extended" color="primary" aria-label="Add" className={classes.addFab} onClickCapture={this.onCreateNewOrder.bind(this)}>
                                 <AddIcon className={classes.extendedIcon} />
                                 Nuevo pedido</Fab>

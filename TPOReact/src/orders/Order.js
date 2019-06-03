@@ -32,9 +32,14 @@ let styles = theme => ({
     text: {
         textAlign: 'center',
         flex: 'auto',
+        color: 'black',
     },
     listItem: {
         textAlign: 'center',
+        color: 'black',
+    },
+    typography: {
+        color: 'black',
     }
 });
 class Order extends React.Component {
@@ -137,30 +142,30 @@ class Order extends React.Component {
         let { classes } = this.props;
         let date = new Date(this.props.order.fechaPedido);
         return <React.Fragment>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h6" gutterBottom className={classes.typography}>
                 Pedido número {this.props.order.numeroPedido}
             </Typography>
             <Grid container alignContent="center" alignItems="flex-start">
                 <Grid item xs={6}>
-                    <Typography variant="h6" gutterBottom>Cliente</Typography>
+                    <Typography className={classes.typography} variant="h6" gutterBottom>Cliente</Typography>
                 </Grid>
                 <Grid item xs={6}>
-                    <Typography gutterBottom>{this.props.order.cliente.nombre}</Typography>
+                    <Typography className={classes.typography} gutterBottom>{this.props.order.cliente.nombre}</Typography>
                 </Grid>
                 <Grid item xs={6}>
-                    <Typography variant="h6" gutterBottom>Fecha</Typography>
+                    <Typography className={classes.typography} variant="h6" gutterBottom>Fecha</Typography>
                 </Grid>
                 <Grid item xs={6}>
-                    <Typography gutterBottom>{date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()}</Typography>
+                    <Typography className={classes.typography} gutterBottom>{date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()}</Typography>
                 </Grid>
                 <Grid item xs={6}>
-                    <Typography variant="h6" gutterBottom>Estado</Typography>
+                    <Typography className={classes.typography} variant="h6" gutterBottom>Estado</Typography>
                 </Grid>
                 <Grid item xs={6}>
-                    <Typography gutterBottom>{this.props.order.estado}</Typography>
+                    <Typography className={classes.typography} gutterBottom>{this.props.order.estado}</Typography>
                 </Grid>
                 <Grid item xs={6}>
-                    <Typography variant="h6" gutterBottom>Productos</Typography>
+                    <Typography className={classes.typography} variant="h6" gutterBottom>Productos</Typography>
                 </Grid>
                 <Grid item xs={6}>
                     <Button variant="text" color="primary" className="button" onClickCapture={this.onAddProducts.bind(this)} disabled={this.props.order.estado === "facturado"}>
@@ -180,14 +185,13 @@ class Order extends React.Component {
                             <Grid item xs={12}>
                                 <ListItem key={index}>
                                     <FormControl className={classes.margin} required>
-                                        <InputLabel htmlFor="product">Producto</InputLabel>
+                                        <InputLabel shrink htmlFor="product">Producto</InputLabel>
                                         <Select
                                             id="product"
                                             value={this.state.pendingProducts[index].product}
                                             onChange={this.addProductName(index)}
                                             error={!this.state.pendingProducts[index].product}
-                                            name="product"
-                                            displayEmpty>
+                                            name="product">
                                             {this.state.products.map(product => (
                                                 <MenuItem key={product.identificador} value={product.identificador}>
                                                     {product.nombre}

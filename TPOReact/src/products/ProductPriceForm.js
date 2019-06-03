@@ -23,6 +23,9 @@ let styles = theme => ({
     left: '50%',
     transform: 'translate(-50%, -50%) !important',
   },
+  typography: {
+    color: 'black',
+  }
 });
 
 
@@ -60,7 +63,7 @@ class ProductPriceForm extends React.Component {
     return (
       <div>
         <Paper className={classes.paper}>
-          <Typography variant="h5">Nuevo precio</Typography>
+          <Typography className={classes.typography} variant="h5">Nuevo precio</Typography>
             <form className={classes.container} noValidate autoComplete="off" onSubmit={this.onSubmit.bind(this)}>
               <Grid item xs={12}>
                 <FormControl fullWidth required>

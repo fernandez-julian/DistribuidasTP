@@ -33,6 +33,9 @@ let styles = theme => ({
     margin: {
         margin: theme.spacing.unit,
     },
+    typography: {
+        color: 'black',
+    }
 });
 class ProductForm extends React.Component {
     state = {
@@ -102,7 +105,7 @@ class ProductForm extends React.Component {
         let { classes } = this.props;
         return <div>
             <Paper className={classes.paper}>
-                <Typography variant="h5">Nuevo producto</Typography>
+                <Typography className={classes.typography} variant="h5">Nuevo producto</Typography>
                 <form className={classes.container} noValidate autoComplete="off" onSubmit={this.onSubmit.bind(this)}>
                     <Grid item xs={12}>
                         <FormControl fullWidth className={classes.margin} required>

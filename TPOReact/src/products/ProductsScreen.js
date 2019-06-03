@@ -64,6 +64,9 @@ let styles = theme => ({
     formControl: {
         margin: theme.spacing.unit,
         minWidth: 120,
+    },
+    typography: {
+        color: 'black',
     }
 });
 
@@ -204,7 +207,7 @@ class ProductosScreen extends React.Component {
                 <Grid container >
                     <Grid item xs={12}>
                         <Paper className={classes.paper}>
-                            <Typography variant="h5">Productos</Typography>
+                            <Typography className={classes.typography} variant="h5">Productos</Typography>
                             <Fab variant="extended" color="primary" aria-label="Add" className={classes.addFab} onClickCapture={this.onAddNewProduct.bind(this)}>
                                 <AddIcon className={classes.extendedIcon} />
                                 Nuevo producto</Fab>
