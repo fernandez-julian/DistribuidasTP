@@ -57,13 +57,34 @@ class LogInScreen extends React.Component {
   
   
     handleChange = name => event => {
-      this.setState({ [name]: event.target.value });
+      this.setState({ [name]: event });
+      console.log(this.state);
+    };
+
+      iniciarSesion () {
+        requestBody.nombre = this.state.nombre;
+        requestBody.clave = this.state.clave;
+        fetch('/TPOSpring/login', {
+          method: "POST",
+          body: JSON.stringify(requestBody),
+          headers: new Headers({
+              'Content-Type': 'application/json'
+          }),
+      }).then(response => { return response.json() })
+      .then(response => {
+        console.log(response);
+        this.setState({ successText: response.mensaje });
+        if(response.estado===true){
+          //this.props.logIn();
+        }
+      });
   };
 
 
-    render() {
 
-        return (
+    render() {
+      
+      return (
             <View style={styles.container}>
               <Image source={imageLogo} style={styles.logo} />
               <View>
@@ -75,16 +96,16 @@ class LogInScreen extends React.Component {
               <View style={styles.form}>
                 <FormTextInput
                   value={this.state.email}
-                  onChangeText={this.handleChange('name')}
+                  onChangeText={this.handleChange('nombre')}
                   placeholder= "Nombre"
                 />
                 <FormTextInput
                   value={this.state.password}
-                  onChangeText={this.handleChange('password')}
+                  onChangeText={this.handleChange('clave')}
                   placeholder= "Clave"
                 />
                 <Button raised primary text="iniciar sesion" onPress={() => {
-            this.inciarSesion()
+            this.iniciarSesion()
           }}/>
               </View>
             </View>
@@ -118,3 +139,4 @@ class LogInScreen extends React.Component {
     }
 }
 export default LogInScreen;
+
