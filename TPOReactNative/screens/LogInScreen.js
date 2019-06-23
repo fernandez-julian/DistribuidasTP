@@ -11,13 +11,14 @@ import React from 'react';
   TouchableOpacity,
 } from 'react-native';
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';*/
-import { Avatar, Button } from 'react-native-material-ui';
-import { Image, StyleSheet, View } from "react-native";
+import { Button } from 'react-native-material-ui';
+import { Text, StyleSheet, View } from "react-native";
 import FormTextInput from "../components/FormTextInput";
 import imageLogo from "../components/usr.png";
 import colors from "../config/colors";
 import strings from "../config/strings";
 import LottieView from 'lottie-react-native';
+import Dialog from "react-native-dialog";
 
 const styles = StyleSheet.create({
     container: {
@@ -39,7 +40,21 @@ const styles = StyleSheet.create({
       justifyContent: "center",
       width: "80%"
     },
-   
+    check: {
+      alignItems: 'center',
+      flex : 1,
+      marginTop: 100,
+    },
+    usr: {
+      flex: 1,
+        height: 250,
+        width: 100,
+        padding: 100,
+        margin: 0,
+        position: 'absolute',
+        marginTop: 50,
+    },
+
   });
   
 
@@ -49,6 +64,8 @@ class LogInScreen extends React.Component {
         nombre: '',
         clave: '',
         successText: '',
+        loading: false,
+        isDialogVisible: false,
       };
 
     static navigationOptions = {
@@ -62,7 +79,8 @@ class LogInScreen extends React.Component {
     };
 
       iniciarSesion () {
-        requestBody.nombre = this.state.nombre;
+        this.setState({loading: true})
+        /*requestBody.nombre = this.state.nombre;
         requestBody.clave = this.state.clave;
         fetch('/TPOSpring/login', {
           method: "POST",
@@ -78,64 +96,66 @@ class LogInScreen extends React.Component {
           //this.props.logIn();
         }
       });
-  };
+    */};
 
-
+    onPressText = () => {
+      this.setState({isDialogVisible: true});
+    } 
 
     render() {
       
       return (
-            <View style={styles.container}>
-              <Image source={imageLogo} style={styles.logo} />
-              <View>
-                <LottieView 
-                 style ={styles.animation}
-                source={require('../assets/animations/Check-Mark-Success-Data.json')} 
-                autoPlay loop />
-              </View>
-              <View style={styles.form}>
-                <FormTextInput
-                  value={this.state.email}
-                  onChangeText={this.handleChange('nombre')}
-                  placeholder= "Nombre"
-                />
-                <FormTextInput
-                  value={this.state.password}
-                  onChangeText={this.handleChange('clave')}
-                  placeholder= "Clave"
-                />
-                <Button raised primary text="iniciar sesion" onPress={() => {
-            this.iniciarSesion()
-          }}/>
-              </View>
-            </View>
-          );
 
-       /* return (
-            <View style = {styles.container}>
-               <TextInput style = {styles.input}
-                  underlineColorAndroid = "transparent"
-                  placeholder = " Nombre"
-                  placeholderTextColor = "#4580ea"
-                  autoCapitalize = "none"
-                  onChangeText = {this.handleEmail}/>
-               
-               <TextInput style = {styles.input}
-                  underlineColorAndroid = "transparent"
-                  placeholder = " Clave"
-                  placeholderTextColor = "#4580ea"
-                  autoCapitalize = "none"
-                  onChangeText = {this.handlePassword}/>
-               
-               <TouchableOpacity
-                  style = {styles.submitButton}
-                  onPress = {
-                     () => this.login(this.state.email, this.state.password)
-                  }>
-                  <Text style = {styles.submitButtonText}> Aceptar </Text>
-               </TouchableOpacity>
-            </View>
-         )*/
+        <View style={styles.container}>
+        <LottieView 
+           style ={styles.usr}
+          source={require('../assets/animations/user.json')} 
+          autoPlay loop ={false} />
+        <View style={styles.form}>
+          <FormTextInput
+            value={this.state.email}
+            onChangeText={this.handleChange('nombre')}
+            placeholder= "Nombre"
+          />
+          <FormTextInput
+            value={this.state.password}
+            onChangeText={this.handleChange('clave')}
+            placeholder= "Clave"
+          />
+          
+        {
+            this.state.loading == false
+            ?  <View>
+                 <Button raised primary text="iniciar sesion"
+                 onPress={() => {this.iniciarSesion()}}/>
+                  <Text style={{color: 'red', marginTop:35, alignSelf: "center"}} onPress={this.onPressText}>
+                  Cambiar contraseña
+                  </Text>
+              </View>
+            : 
+               <LottieView 
+               style ={styles.check}
+               source={require('../assets/animations/Check-Mark-Success-Data.json')} 
+               autoPlay loop ={false} />
+              
+          } 
+          
+        </View>
+       
+        <Dialog.Container visible={this.state.isDialogVisible}>
+          <Dialog.Title>Cambiar contraseña</Dialog.Title>
+          <Dialog.Description>
+            Su contraseña debe ser diferente a las 10 anteriores
+          </Dialog.Description>
+          <Dialog.Input placeholder="Nombre de usuario"></Dialog.Input>
+          <Dialog.Input placeholder="Contraseña actual"></Dialog.Input>
+          <Dialog.Input placeholder="Contraseña Nueva"></Dialog.Input>
+          <Dialog.Button label="Cancelar" onPress= {() => this.setState({isDialogVisible: false})}/>
+          <Dialog.Button label="Aceptar" />
+        </Dialog.Container>
+       
+      </View>
+    );
     }
 }
 export default LogInScreen;
