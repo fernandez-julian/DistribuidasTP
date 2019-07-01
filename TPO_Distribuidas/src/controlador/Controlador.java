@@ -44,7 +44,7 @@ public class Controlador {
 	/**
 	 * Verifica el login y el password ingresado, si son incorrecto lanza un LoginException
 	 * 
-	 * Si el password tiene mas de x dÌas lanza un CambioPasswordException indicando que la password est· vencida
+	 * Si el password tiene mas de x d√≠as lanza un CambioPasswordException indicando que la password est√° vencida
 	 * 
 	 * */
 	public boolean login(String nombre, String password) throws LoginException, CambioPasswordException{
@@ -87,6 +87,7 @@ public class Controlador {
 	/*Probado*/
 	public void modificaProducto(ProductoView recibido) throws ProductoException{
 		Producto producto = ProductoDAO.getInstancia().findProductoByIdentificador(recibido.getIdentificador());
+		producto.setPrecio(recibido.getPrecio());
 		producto.update();
 	}
 	/*Probado*/
