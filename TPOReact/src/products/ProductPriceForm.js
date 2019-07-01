@@ -41,7 +41,7 @@ class ProductPriceForm extends React.Component {
     if (!this.state.price) {
       this.setState({ helperText: "*Campo requerido" });
     } else {
-      fetch('/TPOSpring/productos/modificar?idProducto=' + this.props.id, { method: "POST" })
+      fetch('/TPOSpring/productos/modificar?idProducto=' + this.props.id + '&precio=' + this.state.price, { method: "POST" })
         .then(response => { return response.json(); })
         .then(response => {
           if (response.estado === true) {
