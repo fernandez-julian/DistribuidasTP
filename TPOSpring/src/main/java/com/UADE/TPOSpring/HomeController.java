@@ -220,27 +220,27 @@ public class HomeController
         return objectMapper.writeValueAsString( respuesta );
     }
 
-    @RequestMapping( value = "/productos/modificar", method = RequestMethod.POST, produces = "application/json" )
-    public @ResponseBody String modificarProducto( @RequestParam( value = "idProducto", required = true ) int idProducto )
-        throws JsonProcessingException
-    {
-        Respuesta respuesta = new Respuesta();
-        ObjectMapper objectMapper = new ObjectMapper();
-        ProductoView producto = new ProductoView( null, null, null, null, null, 0 );
-        producto.setIdentificador( idProducto );
-        try
-        {
-            Controlador.getInstancia().modificaProducto( producto );
-            respuesta.setMensaje( Mensaje.PRODUCTO_MODIFICADO.getDescripcion() );
-            respuesta.setEstado( true );
-        }
-        catch ( ProductoException e )
-        {
-            respuesta.setEstado( false );
-            respuesta.setMensaje( e.getMessage() );
-        }
-        return objectMapper.writeValueAsString( respuesta );
-    }
+       @RequestMapping( value = "/productos/modificar", method = RequestMethod.POST, produces = "application/json" )
+	   public @ResponseBody String modificarProducto( @RequestParam( value = "idProducto", required = true ) int idProducto, @RequestParam( value = "precio", required = true ) float precio )
+	        throws JsonProcessingException
+	    {
+	        Respuesta respuesta = new Respuesta();
+	        ObjectMapper objectMapper = new ObjectMapper();
+	        ProductoView producto = new ProductoView( null, null, null, null, null, precio );
+	        producto.setIdentificador( idProducto );
+	        try
+	        {
+	            Controlador.getInstancia().modificaProducto( producto );
+	            respuesta.setMensaje( Mensaje.PRODUCTO_MODIFICADO.getDescripcion() );
+	            respuesta.setEstado( true );
+	        }
+	        catch ( ProductoException e )
+	        {
+	            respuesta.setEstado( false );
+	            respuesta.setMensaje( e.getMessage() );
+	        }
+	        return objectMapper.writeValueAsString( respuesta );
+	    }
 
     @RequestMapping( value = "/pedidos/{nroPedido}/productos", method = RequestMethod.POST, produces = "application/json" )
     public @ResponseBody String agregarProductosEnPedido( @PathVariable( value = "nroPedido" ) int nroPedido,
