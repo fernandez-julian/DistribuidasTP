@@ -76,7 +76,7 @@ class ProductosScreen extends React.Component {
         this.state = {
             productos: [], loading: false, message: "", page: 0,
             rowsPerPage: 6, rows: [], open: false, openModal: false, items: [], item: '',
-            subitems: [], subitem: '', openModifyModal: false
+             subitems: [], subitem: '', openModifyModal: false,productoSeleccionado:null
         };
         this.props = props;
     }
@@ -133,7 +133,7 @@ class ProductosScreen extends React.Component {
     }
 
     onModify = (id) => {
-        this.setState({ openModifyModal: true });
+         this.setState({ openModifyModal: true,productoSeleccionado:id });
     }
 
     handleChangePage = (event, page) => {
@@ -245,7 +245,7 @@ class ProductosScreen extends React.Component {
                                                     aria-describedby="simple-modal-description"
                                                     open={this.state.openModifyModal}
                                                     onClose={this.handleModifyModalClose.bind(this, "")}
-                                                ><ProductPriceForm id={producto.identificador} closeModal={this.handleModifyModalClose} /></Modal>
+                                                ><ProductPriceForm id={this.state.productoSeleccionado} closeModal={this.handleModifyModalClose} /></Modal>
                                                 <TableCell className={classes.tableCell}>
                                                     {producto.identificador}
                                                 </TableCell>
